@@ -7,7 +7,7 @@ namespace LondonStock.Api.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/trades")]
     public class TradesController : ControllerBase
     {
         private readonly ITradeService _tradeService;
@@ -20,13 +20,16 @@ namespace LondonStock.Api.Controllers
         }
 
         [Authorize(Roles = "Broker")]
-        [HttpPost]
+        [HttpPost("createTrade")]
         public async Task<IActionResult> CreateTrade([FromBody] TradeCreateDto dto)
         {
             _logger.LogInformation("Broker {User} creating trade for stock {Ticker}",
                 User.Identity?.Name, dto.TickerSymbol);
+
             await _tradeService.CreateTradeAsync(dto);
+
             _logger.LogInformation("Trade successfully recorded for {Ticker}", dto.TickerSymbol);
+
             return Ok(new { message = "Trade recorded successfully" });
         }
     }
